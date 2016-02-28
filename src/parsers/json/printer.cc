@@ -38,7 +38,7 @@ fancy::ptr pretty_print::format(ptr const &p) const
 fancy::ptr pretty_print::format(object const *obj) const
 {
     MultiString next_indent(indent);
-    next_indent << console::fg(60, 60, 60) << "┊   " << console::reset();
+    next_indent << console::fg(60, 60, 60) << "│   " << console::reset();
     return fancy::compose(
         console::fg(100, 100, 200), "{\n",
         fancy::intersperse_map(
