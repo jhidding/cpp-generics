@@ -1,11 +1,14 @@
 #include <array>
 #include <cstddef>
 
-namespace Numeric
+namespace numeric
 {
     using std::size_t;
 
     template <unsigned D>
-    using shape_t = std::array<size_t, D>;
+    using shape_t = std::array<uint32_t, D>;
+
+    template <unsigned D>
+    using stride_t = std::array<int32_t, D>;
 }
 

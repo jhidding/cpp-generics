@@ -1,12 +1,14 @@
 #pragma once
-#include <valarray>
+#include <array>
+#include <cstdint>
+#include "types.hh"
 
-namespace Numeric
+namespace numeric
 {
     template <unsigned D>
-    inline shape_t<D> calc_stride(shape_t<D> const &shape)
+    inline stride_t<D> calc_stride(shape_t<D> const &shape)
     {
-        shape_t<D> stride;
+        stride_t<D> stride;
 
         stride[0] = 1;
         for (unsigned i = 1; i < shape.size(); ++i)
@@ -16,9 +18,9 @@ namespace Numeric
     }
 
     template <unsigned D>
-    inline size_t calc_size(shape_t<D> const &shape)
+    inline uint32_t calc_size(shape_t<D> const &shape)
     {
-        size_t size = 1;
+        uint32_t size = 1;
         for (unsigned i = 0; i < shape.size(); ++i)
             size *= shape[i];
         return size;
