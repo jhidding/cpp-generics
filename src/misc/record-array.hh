@@ -40,6 +40,9 @@ namespace record_array
     {
         TYPE_ID     type;
         std::string name;
+
+        Field(TYPE_ID type, std::string const &name):
+            type(type), name(name) {}
     };
 
     using RecordSpec = std::vector<Field>;
@@ -89,6 +92,8 @@ namespace record_array
             case T_DOUBLE:  tgt = cast<T, double  >(data);
                             return data + 8;
         }
+
+        throw Exception("Error reading record field: unknown data type.");
     }
 
     template <typename T>
@@ -112,22 +117,23 @@ namespace record_array
     {
         RecordSpec const &spec;
         char const *data;
-        T record;
+        size_t r_size;
+        mutable T record;
 
         public:
             RecordIterator(RecordSpec const &spec, char const *data):
-                spec(spec), data(data) 
-            {
-            }
+                spec(spec), data(data), r_size(record_size(spec))
+            {}
 
             RecordIterator &operator++()
             {
-                data = read_record(spec, data, record, make_seq<std::tuple_size<T>::value>());
+                data += r_size;
                 return *this;
             }
 
             T const &operator*() const
             {
+                read_record(spec, data, record, make_seq<std::tuple_size<T>::value>());
                 return record;
             }
 
@@ -173,11 +179,25 @@ namespace record_array
             RecordSpec spec;
 
             RecordArray() {}
+            
+            template <typename T>
+            RecordArray &field(std::string const &name)
+            {
+                spec.emplace_back(Type<T>::id, name);
+                return *this;
+            }
+
+            template <typename Iterator>
+            void load_bytes(Iterator begin, Iterator end)
+            {
+                data.insert(data.end(), begin, end);
+            }
 
             template <typename T>
             RecordArrayView<T> as()
             {
-                return RecordArrayView<T>(spec, data.data, record_size(spec));
+                size_t size = data.size() / record_size(spec);
+                return RecordArrayView<T>(spec, data.data(), size);
             }
     };
 }
